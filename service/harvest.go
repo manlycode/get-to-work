@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/adlio/harvest"
-	pass "github.com/manlycode/get-to-work/password"
+	pass "github.com/manlycode/go-to-work/password"
 )
 
 // HarvestService defines a harvest service
@@ -16,37 +16,36 @@ type WhoAmIResponse struct {
 	User *harvest.User `json:"user"`
 }
 
+func (hs *HarvestService) Name() string {
+	return "Harvest"
+}
+
+func (hs HarvestService) FullName() string {
+	return "GoToWork::Harvest"
+}
+
 func NewHarvestService() (harvestService *HarvestService) {
-	return &HarvestService{
-		Service: Service{Name: "Harvest"},
-	}
+	return &HarvestService{}
 }
 
 // NewHarvestService creates a HarvestService instance
-func (hs *HarvestService) SignIn(subdomain string, email string, password string) (service HarvestService, err error) {
+func (hs *HarvestService) SignIn(subdomain string, email string, password string) error {
 	api := harvest.NewBasicAuthAPI(subdomain, email, password)
 	res := WhoAmIResponse{}
-	srv := HarvestService{
-		Service: Service{Name: "Harvest"},
-		API:     api,
-	}
 
 	// Get the user
-	err = api.Get(
+	err := api.Get(
 		"/account/who_am_i",
 		harvest.Defaults(),
 		&res,
 	)
 
 	if err == nil {
-		srv.User = res.User
-		pw := pass.Password{
-			ServiceName: srv.FullName(),
-			UserName:    email,
-		}
+		hs.User = res.User
+		pw := pass.NewPassword(*hs)
 
 		err = pw.Set(password)
 	}
 
-	return srv, err
+	return err
 }

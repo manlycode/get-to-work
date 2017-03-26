@@ -4,7 +4,7 @@
 
 2. Run the server
     ```
-    cd $GOPATH/src/github.com/manlycode/get-to-work
+    cd $GOPATH/src/github.com/manlycode/go-to-work
     go run main.go
     ```
 
