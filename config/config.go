@@ -3,18 +3,31 @@ package config
 import (
 	"bufio"
 	"github.com/BurntSushi/toml"
-	"github.com/manlycode/go-to-work/service"
 	"os"
 )
 
+type service interface {
+	Name() string
+}
+
 // Config defines a data structure that contains configuration for the application
 type Config struct {
-	Services map[string]*service.Service
+	Services map[string]*service
+}
+
+// NewConfig creates a new Config instance
+func NewConfig() (c *config) {
+	return &Config{Services: make(map[string]*service)}
 }
 
 // ConfigFile defines a file to store the configs
 type ConfigFile struct {
 	Path string
+}
+
+func (c *Config) AddService(s service) {
+	services := &c.Services
+	services[s.Name()] = s
 }
 
 const defaultPath = ".go-to-work"
